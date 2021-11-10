@@ -1,34 +1,54 @@
 import { useState, useEffect } from "react";
-import axios from 'axios'
+import axios from "axios";
 function Catlist() {
   let [cats, setCats] = useState([]);
-  console.log(cats)
+  console.log(cats);
   let [catsTemp, setCatsTemp] = useState();
-  console.log(catsTemp)
+  console.log(catsTemp);
 
-//   useEffect(() => {
-//     fetch("https://api.thecatapi.com/v1/breeds")
-//       .then((response) => response.json())
-//       .then((result) => setCats([result.data]));
-// console.log(result)
-//     }, []);
-useEffect(()=>{
-    console.log('useEffect')
-    axios("https://api.thecatapi.com/v1/breeds")
-    .then((result)=> setCats(result.data))
-},[])
-   
-  
+  //   useEffect(() => {
+  //     fetch("https://api.thecatapi.com/v1/breeds")
+  //       .then((response) => response.json())
+  //       .then((result) => setCats([result.data]));
+  // console.log(result)
+  //     }, []);
+  let [input, setInput] = useState("");
+  console.log(input);
+  let handleChange = (event) => {
+    setInput(event.target.value);
+  };
+
+  useEffect(() => {
+    axios("https://api.thecatapi.com/v1/breeds").then((result) => {
+      setCats(result.data);
+      setCatsTemp(result.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    const filterInput = catsTemp.filter((item) =>
+      item.name.toLowerCase().includes(input.toLowerCase())
+    );
+    setCats(filterInput);
+    console.log(filterInput);
+  }, [input]);
+
   return (
     <>
-      <p>catslist</p>
-      {cats.map((item)=>(
-        <>
-         <input type="text" onChange={(e)=>setCats(e.target.value)}/>
-       <h2>{item.name}</h2> 
-      
-        </>
-      ))}
+      <input type="text" onChange={handleChange} value={input} />
+      <div>
+        {cats.map((item) => (
+          <div>
+            <div>
+              <p>{item.name}</p>
+              <img src={item.image?.url} width="150" />
+            </div>
+            <div>
+              <p>{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </>
   );
 }
